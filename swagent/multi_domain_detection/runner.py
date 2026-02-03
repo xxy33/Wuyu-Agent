@@ -31,7 +31,8 @@ async def run_multi_domain_detection(
     small_model_name: str = None,
     tile_size: int = 512,
     tile_overlap: int = 64,
-    progress_callback: Optional[callable] = None
+    progress_callback: Optional[callable] = None,
+    create_session_subdir: bool = True
 ) -> Dict[str, Any]:
     """
     运行多领域遥感检测
@@ -54,6 +55,7 @@ async def run_multi_domain_detection(
         tile_size: 切割尺寸
         tile_overlap: 重叠像素
         progress_callback: 进度回调函数 async def callback(current, total, filename, message)
+        create_session_subdir: 是否在output_dir下创建session子目录 (CLI调用为True, Web调用为False)
 
     Returns:
         检测结果
@@ -112,7 +114,8 @@ async def run_multi_domain_detection(
         vl_config=vl_config,
         llm_config=llm_config,
         small_model_config=small_model_config,
-        output_dir=output_dir
+        output_dir=output_dir,
+        create_session_subdir=create_session_subdir
     )
 
     # 运行检测（带进度回调）

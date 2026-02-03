@@ -201,3 +201,72 @@ class DatabaseManager:
                 })
 
             return results
+
+    def save_model_call(
+        self,
+        image_name: str,
+        call_type: str,
+        model_name: str,
+        prompt: str,
+        image_path: str,
+        raw_response: str,
+        parsed_result: Any,
+        success: bool,
+        error_message: str = None,
+        latency_ms: int = None
+    ):
+        """保存模型调用记录"""
+        with self._get_connection() as conn:
+            conn.execute("""
+                INSERT INTO model_calls
+                (session_id, image_name, call_type, model_name, prompt, image_path,
+                 raw_response, parsed_result, success, error_message, latency_ms)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                self.session_id,
+                image_name,
+                call_type,
+                model_name,
+                prompt,
+                image_path,
+                raw_response,
+                json.dumps(parsed_result, ensure_ascii=False) if parsed_result else None,
+                success,
+                error_message,
+                latency_ms
+            ))
+
+    def get_model_calls(self, image_name: str = None) -> List[Dict[str, Any]]:
+        """获取模型调用记录"""
+        with self._get_connection() as conn:
+            if image_name:
+                rows = conn.execute("""
+                    SELECT * FROM model_calls
+                    WHERE session_id = ? AND image_name = ?
+                    ORDER BY created_at
+                """, (self.session_id, image_name)).fetchall()
+            else:
+                rows = conn.execute("""
+                    SELECT * FROM model_calls
+                    WHERE session_id = ?
+                    ORDER BY created_at
+                """, (self.session_id,)).fetchall()
+
+            calls = []
+            for row in rows:
+                calls.append({
+                    "id": row["id"],
+                    "image_name": row["image_name"],
+                    "call_type": row["call_type"],
+                    "model_name": row["model_name"],
+                    "prompt": row["prompt"],
+                    "image_path": row["image_path"],
+                    "raw_response": row["raw_response"],
+                    "parsed_result": json.loads(row["parsed_result"]) if row["parsed_result"] else None,
+                    "success": bool(row["success"]),
+                    "error_message": row["error_message"],
+                    "latency_ms": row["latency_ms"],
+                    "created_at": row["created_at"]
+                })
+
+            return calls

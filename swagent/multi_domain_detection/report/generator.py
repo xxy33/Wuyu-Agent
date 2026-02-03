@@ -257,15 +257,25 @@ class MultiDomainReportGenerator:
             elif processed_path and not processed_path.startswith('/'):
                 processed_path = '/' + processed_path
 
-            # 获取描述
+            # 获取描述（只从检测到目标的任务中获取）
             description = ""
+            detected_task = ""
             for task_name, result in results.items():
-                if result.get("description"):
+                if result.get("has_target") and result.get("description"):
                     description = result.get("description")
+                    detected_task = self.task_loader.get_task(task_name)["name"]
                     break
 
+            # 简化文件名显示（移除坐标和时间戳）
+            display_name = Path(image_name).stem
+            # 尝试提取更简洁的名称（去除处理后缀）
+            if "_processed" in display_name:
+                display_name = display_name.replace("_processed", "")
+
             section += f"""
-### 样例 {i}: {Path(image_name).stem}
+### 样例 {i}: {display_name}
+
+**检测任务**: {detected_task if detected_task else "未知"}
 
 <table>
 <tr>

@@ -2,8 +2,8 @@
 # 6大类任务的prompt模板
 
 aerial_waste:
-  name: "航拍废物检测"
-  description: "检测航拍图像中的废物堆放情况"
+  name: "非法堆存检测"
+  description: "检测航拍图像中的非法堆存物"
   complexity: "simple"  # simple任务可以合并调用
   prompt: |
     你是一个专业的航拍废物检测AI。请仔细分析图像并完成以下任务：
@@ -45,8 +45,8 @@ aerial_waste:
     ```
 
 cwld:
-  name: "建筑垃圾/填埋场"
-  description: "检测建筑垃圾和填埋场区域"
+  name: "建筑垃圾检测"
+  description: "检测建筑垃圾堆放区域"
   complexity: "complex"  # complex任务单独调用
   prompt: |
     你是一个专业的建筑垃圾/填埋场检测AI。请分析图像中的区域类型和分布：
@@ -73,7 +73,7 @@ cwld:
     ```
 
 landfill:
-  name: "垃圾填埋场"
+  name: "填埋场检测"
   description: "检测和分析垃圾填埋场"
   complexity: "simple"
   prompt: |
@@ -96,7 +96,7 @@ landfill:
     ```
 
 solar_photovoltaic_arrays:
-  name: "太阳能光伏阵列"
+  name: "光伏检测"
   description: "检测太阳能光伏板和阵列"
   complexity: "complex"
   prompt: |
@@ -122,8 +122,8 @@ solar_photovoltaic_arrays:
     ```
 
 tank:
-  name: "储罐"
-  description: "检测各类储罐"
+  name: "储罐检测"
+  description: "检测各类储罐设施"
   complexity: "complex"
   prompt: |
     你是一个专业的储罐检测AI。请分析：
@@ -147,8 +147,8 @@ tank:
     ```
 
 wind_turbines:
-  name: "风力涡轮机"
-  description: "检测风力涡轮机"
+  name: "风机检测"
+  description: "检测风力发电涡轮机"
   complexity: "complex"
   prompt: |
     你是一个专业的风力涡轮机检测AI。请分析：

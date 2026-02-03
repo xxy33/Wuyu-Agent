@@ -38,6 +38,24 @@ CREATE TABLE IF NOT EXISTS task_statistics (
     PRIMARY KEY (session_id, task_name, metric_name)
 );
 
+-- 模型调用日志表
+CREATE TABLE IF NOT EXISTS model_calls (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT NOT NULL,
+    image_name TEXT NOT NULL,
+    call_type TEXT NOT NULL,        -- 'vl_simple' / 'vl_complex' / 'llm_report' / 'sam2'
+    model_name TEXT,
+    prompt TEXT,                    -- 发送的完整 prompt (对于图像，只记录文本部分)
+    image_path TEXT,                -- 输入图像路径
+    raw_response TEXT,              -- 模型原始返回
+    parsed_result TEXT,             -- 解析后的结果 (JSON)
+    success BOOLEAN DEFAULT 1,
+    error_message TEXT,
+    latency_ms INTEGER,             -- 响应时间(毫秒)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES detection_sessions(session_id)
+);
+
 -- 创建索引
 CREATE INDEX IF NOT EXISTS idx_image_results_session
     ON image_results(session_id);
@@ -47,4 +65,10 @@ CREATE INDEX IF NOT EXISTS idx_image_results_target
 
 CREATE INDEX IF NOT EXISTS idx_task_statistics_session
     ON task_statistics(session_id);
+
+CREATE INDEX IF NOT EXISTS idx_model_calls_session
+    ON model_calls(session_id);
+
+CREATE INDEX IF NOT EXISTS idx_model_calls_image
+    ON model_calls(session_id, image_name);
 """

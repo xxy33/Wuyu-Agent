@@ -135,7 +135,8 @@ async def run_detection(
                 small_model_url=sam2_url,
                 small_model_key=sam2_api_key,
                 small_model_name=sam2_model or "sam2_large",
-                progress_callback=progress_callback
+                progress_callback=progress_callback,
+                create_session_subdir=False  # Web调用时不创建子目录，output_dir已是session专用
             )
 
         except ImportError:

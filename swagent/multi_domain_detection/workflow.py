@@ -137,7 +137,9 @@ class StatisticsAggregator:
 
             if task_result.get("has_target"):
                 stats["images_with_target"] += 1
-                stats["target_count"] += task_result.get("count", 0)
+                # 处理不同任务的count字段名称差异（tank使用total_count，其他使用count）
+                count = task_result.get("count", task_result.get("total_count", 0))
+                stats["target_count"] += count
 
                 # 保存前10张样例
                 if len(stats["sample_images"]) < 10:
@@ -191,23 +193,35 @@ class MultiDomainWorkflow:
         vl_config: Dict[str, str],
         llm_config: Dict[str, str],
         small_model_config: Dict[str, str],
-        output_dir: str = "./output"
+        output_dir: str = "./output",
+        create_session_subdir: bool = True
     ):
         self.selected_tasks = selected_tasks
         self.region_name = region_name
         self.vl_config = vl_config
         self.llm_config = llm_config
         self.small_model_config = small_model_config
-        self.output_dir = output_dir
 
         # 生成会话ID
         self.session_id = f"{region_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+        # 根据参数决定是否创建 session 子目录
+        if create_session_subdir:
+            # CLI 调用：在 output_dir 下创建 session 子目录
+            self.session_output_dir = Path(output_dir) / self.session_id
+        else:
+            # Web 调用：output_dir 已经是 session 专用目录
+            self.session_output_dir = Path(output_dir)
+
+        self.session_output_dir.mkdir(parents=True, exist_ok=True)
+        self.output_dir = str(self.session_output_dir)
 
         # 初始化组件
         self.task_loader = TaskLoader()
         self.prompt_builder = PromptBuilder(self.task_loader)
         self.result_parser = RobustResultParser()
-        self.db = DatabaseManager(self.session_id, f"{output_dir}/detection.db")
+        # 数据库存储在 session 独立目录中
+        self.db = DatabaseManager(self.session_id, f"{self.output_dir}/detection.db")
 
         # 统计汇总器
         self.aggregator = StatisticsAggregator(selected_tasks)
@@ -218,6 +232,7 @@ class MultiDomainWorkflow:
         logger.info(f"初始化多领域检测工作流 - 会话: {self.session_id}")
         logger.info(f"  选中任务: {selected_tasks}")
         logger.info(f"  地区: {region_name}")
+        logger.info(f"  输出目录: {self.output_dir}")
 
     async def run(self, image_paths: List[str]) -> Dict[str, Any]:
         """
@@ -330,6 +345,8 @@ class MultiDomainWorkflow:
 
     async def _call_vl_model_single_task(self, image_path: str, task_name: str) -> Dict[str, Any]:
         """调用VL模型处理单个任务"""
+        import time
+        image_name = Path(image_path).name
         prompt = self.prompt_builder.build_single_task_prompt(task_name)
 
         detector = MultiDomainVLDetector(
@@ -339,32 +356,49 @@ class MultiDomainWorkflow:
             system_prompt=prompt
         )
 
+        start_time = time.time()
         result = await detector.detect(image_path)
+        latency_ms = int((time.time() - start_time) * 1000)
+
+        raw_response = result.get("raw_response", "")
+        success = not result.get("error", False)
 
         # 解析结果
-        parsed = self.result_parser.parse(
-            result.get("raw_response", str(result)),
-            [task_name]
-        )
+        parsed = self.result_parser.parse(raw_response, [task_name])
 
         # 处理单任务结果格式
-        # 如果解析结果直接包含 has_target（单任务格式），直接返回
         if "has_target" in parsed:
-            return parsed
-        # 如果是多任务格式，提取对应任务
+            final_result = parsed
         elif task_name in parsed:
-            return parsed[task_name]
+            final_result = parsed[task_name]
         else:
-            # 解析失败，返回带错误标记的结果
-            return {
+            final_result = {
                 "has_target": False,
                 "error": True,
-                "raw_response": result.get("raw_response", ""),
+                "raw_response": raw_response,
                 "description": "解析失败"
             }
 
+        # 记录模型调用日志
+        self.db.save_model_call(
+            image_name=image_name,
+            call_type="vl_complex",
+            model_name=self.vl_config.get("model"),
+            prompt=prompt,
+            image_path=image_path,
+            raw_response=raw_response,
+            parsed_result=final_result,
+            success=success,
+            error_message=raw_response if not success else None,
+            latency_ms=latency_ms
+        )
+
+        return final_result
+
     async def _call_vl_model_multi_task(self, image_path: str, task_names: List[str]) -> Dict[str, Any]:
         """调用VL模型处理多个任务"""
+        import time
+        image_name = Path(image_path).name
         prompt = self.prompt_builder.build_multi_task_prompt(task_names)
 
         detector = MultiDomainVLDetector(
@@ -374,13 +408,15 @@ class MultiDomainWorkflow:
             system_prompt=prompt
         )
 
+        start_time = time.time()
         result = await detector.detect(image_path)
+        latency_ms = int((time.time() - start_time) * 1000)
+
+        raw_response = result.get("raw_response", "")
+        success = not result.get("error", False)
 
         # 解析结果
-        parsed = self.result_parser.parse(
-            result.get("raw_response", str(result)),
-            task_names
-        )
+        parsed = self.result_parser.parse(raw_response, task_names)
 
         # 确保所有任务都有结果
         for task in task_names:
@@ -391,11 +427,41 @@ class MultiDomainWorkflow:
                     "description": "任务结果缺失"
                 }
 
+        # 记录模型调用日志
+        self.db.save_model_call(
+            image_name=image_name,
+            call_type="vl_simple",
+            model_name=self.vl_config.get("model"),
+            prompt=prompt,
+            image_path=image_path,
+            raw_response=raw_response,
+            parsed_result=parsed,
+            success=success,
+            error_message=raw_response if not success else None,
+            latency_ms=latency_ms
+        )
+
         return parsed
 
     async def _process_with_sam2(self, image_path: str, detection_results: Dict[str, Any]) -> Optional[str]:
         """使用SAM2处理图像"""
+        import time
+        import numpy as np
         from swagent.waste_monitoring.processors.small_model_detector import call_small_model_api
+
+        def convert_to_serializable(obj):
+            """将对象转换为可JSON序列化的格式"""
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            elif isinstance(obj, dict):
+                return {k: convert_to_serializable(v) for k, v in obj.items()}
+            elif isinstance(obj, (list, tuple)):
+                return [convert_to_serializable(item) for item in obj]
+            elif isinstance(obj, (np.integer, np.floating)):
+                return obj.item()
+            return obj
+
+        image_name = Path(image_path).name
 
         # 收集所有boundingbox
         all_bboxes = []
@@ -406,6 +472,7 @@ class MultiDomainWorkflow:
         if not all_bboxes:
             return None
 
+        start_time = time.time()
         try:
             result = await call_small_model_api(
                 image_path=image_path,
@@ -415,12 +482,49 @@ class MultiDomainWorkflow:
                 api_key=self.small_model_config.get("api_key"),
                 model=self.small_model_config.get("model")
             )
+            latency_ms = int((time.time() - start_time) * 1000)
 
-            if result.get("success"):
-                return result.get("output_path")
+            success = result.get("success", False)
+            output_path = result.get("output_path") if success else None
+
+            # 转换 result 为可序列化格式
+            serializable_result = convert_to_serializable(result)
+
+            # 记录模型调用日志
+            self.db.save_model_call(
+                image_name=image_name,
+                call_type="sam2",
+                model_name=self.small_model_config.get("model"),
+                prompt=json.dumps({"boundingboxes": all_bboxes}, ensure_ascii=False),
+                image_path=image_path,
+                raw_response=json.dumps(serializable_result, ensure_ascii=False),
+                parsed_result={"output_path": output_path},
+                success=success,
+                error_message=result.get("error") if not success else None,
+                latency_ms=latency_ms
+            )
+
+            return output_path
 
         except Exception as e:
+            latency_ms = int((time.time() - start_time) * 1000)
             logger.warning(f"SAM2处理失败: {e}")
+
+            # 记录失败的调用
+            self.db.save_model_call(
+                image_name=image_name,
+                call_type="sam2",
+                model_name=self.small_model_config.get("model"),
+                prompt=json.dumps({"boundingboxes": all_bboxes}, ensure_ascii=False),
+                image_path=image_path,
+                raw_response=None,
+                parsed_result=None,
+                success=False,
+                error_message=str(e),
+                latency_ms=latency_ms
+            )
+
+        return None
 
         return None
 
