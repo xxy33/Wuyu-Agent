@@ -10,8 +10,8 @@ class LLM4SConfig:
     """LLM4S系统配置"""
 
     # LLM API配置
-    api_key: str = "sk-gGfqISBZDVWoxU58Fr4UzTjXTwFbMw7tcqIrtLSeCErItrYl"
-    base_url: str = "https://www.dmxapi.cn/v1"
+    api_key: str = "sk-xxxx"
+    base_url: str = "https://www.xxxx.cn/v1"
     llm_model: str = "gpt-5.2"
     embedding_model: str = "bge-m3"
     embedding_dim: int = 1024
@@ -20,7 +20,7 @@ class LLM4SConfig:
     local_embedding_model_path: str = "/root/abstract_agent/embedding/bge-m3"
 
     # Tavily配置
-    tavily_api_key: str = "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"
+    tavily_api_key: str = "tvly-dev-xxxx"
 
     # 数据路径
     kg_path: str = "/root/abstract_agent/data/knowledge/New_Output_Remote.jsonl"
