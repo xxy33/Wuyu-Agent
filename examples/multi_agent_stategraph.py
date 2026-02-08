@@ -40,8 +40,8 @@ logger = logging.getLogger("example.stategraph")
 # ============================================================
 # API 配置
 # ============================================================
-API_KEY = "sk-gGfqISBZDVWoxU58Fr4UzTjXTwFbMw7tcqIrtLSeCErItrYl"
-BASE_URL = "https://www.dmxapi.cn/v1"
+API_KEY = "sk-xxxx"
+BASE_URL = "https://www.xxxx.cn/v1"
 MODEL = "gpt-5.2"
 
 client = AsyncOpenAI(api_key=API_KEY, base_url=BASE_URL, timeout=120)

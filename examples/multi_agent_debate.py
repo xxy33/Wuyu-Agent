@@ -37,8 +37,8 @@ logger = logging.getLogger("example.debate")
 LLM_CONFIG = LLMConfig(
     provider="openai",
     model="gpt-5.2",
-    api_key="sk-gGfqISBZDVWoxU58Fr4UzTjXTwFbMw7tcqIrtLSeCErItrYl",
-    base_url="https://www.dmxapi.cn/v1",
+    api_key="sk-xxxx",
+    base_url="https://www.xxxx.cn/v1",
     temperature=0.7,
     max_tokens=2048,
 )
