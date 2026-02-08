@@ -163,3 +163,4 @@ add.md
 tests/*
 imagery_output/jilin_2024_116.3500_39.8500_20260120_110538.png
 data/*
+swagent/llm4s/data/faiss_index/
