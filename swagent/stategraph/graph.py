@@ -260,7 +260,8 @@ class StateGraph:
     def add_parallel_edge(
         self,
         source: Union[str, Node, _SpecialNode],
-        targets: List[Union[str, Node, _SpecialNode]]
+        targets: List[Union[str, Node, _SpecialNode]],
+        converge_to: Optional[Union[str, Node, _SpecialNode]] = None
     ) -> "StateGraph":
         """
         Add a parallel edge that fans out to multiple nodes.
@@ -268,11 +269,20 @@ class StateGraph:
         Args:
             source: Source node
             targets: List of target nodes
+            converge_to: Node to converge to after all parallel nodes complete.
+                         If None, execution ends after parallel nodes finish.
 
         Returns:
             Self for chaining
+
+        Example:
+            graph.add_parallel_edge(
+                "analyst",
+                ["tech_eval", "env_eval", "econ_eval"],
+                converge_to="synthesizer"
+            )
         """
-        e = parallel_edge(source, targets)
+        e = parallel_edge(source, targets, converge_to=converge_to)
         self._edges.add(e)
         return self
 
@@ -430,7 +440,8 @@ class StateGraph:
             if edge.edge_type == EdgeType.FIXED:
                 lines.append(f"  {edge.source} -> {edge.target}")
             elif edge.edge_type == EdgeType.PARALLEL:
-                lines.append(f"  {edge.source} -> [{', '.join(edge.target)}]")
+                converge = f" -> {edge.converge_to}" if edge.converge_to else ""
+                lines.append(f"  {edge.source} -> [{', '.join(edge.target)}]{converge}")
             else:
                 lines.append(f"  {edge.source} -> {edge.targets} (conditional)")
 
@@ -558,9 +569,33 @@ class CompiledGraph:
                     result=result,
                     config=config
                 )
-                # After parallel, need to find convergence point
-                # For now, just end (real implementation would need join logic)
-                break
+                # Converge to next node if specified
+                if edge.converge_to:
+                    current_node = edge.converge_to
+                    # Execute the convergence node
+                    if current_node == "__END__":
+                        break
+                    if current_node in self._nodes:
+                        node = self._nodes[current_node]
+                        if current_node in config.interrupt_before:
+                            result.status = GraphStatus.INTERRUPTED
+                            return
+                        if config.save_checkpoints:
+                            state_manager.save_snapshot(node_name=current_node)
+                        node_result = await node.execute(state_manager.state)
+                        result.history.append(node_result)
+                        if node_result.success:
+                            state_manager.update(node_result.state_updates)
+                        else:
+                            raise RuntimeError(
+                                f"Node '{current_node}' failed: {node_result.error}"
+                            )
+                        if current_node in config.interrupt_after:
+                            result.status = GraphStatus.INTERRUPTED
+                            return
+                    continue
+                else:
+                    break
 
             # Check for END
             if target == "__END__":
@@ -694,13 +729,14 @@ class CompiledGraph:
                             state=state_manager.state
                         )
                 # Execute parallel
+                parallel_result = ExecutionResult(
+                    status=GraphStatus.RUNNING,
+                    state={}
+                )
                 await self._execute_parallel(
                     targets=target,
                     state_manager=state_manager,
-                    result=ExecutionResult(
-                        status=GraphStatus.RUNNING,
-                        state={}
-                    ),
+                    result=parallel_result,
                     config=exec_config
                 )
                 yield StreamEvent(
@@ -708,7 +744,45 @@ class CompiledGraph:
                     node_name=None,
                     state=state_manager.state
                 )
-                break
+                # Converge to next node if specified
+                if edge.converge_to:
+                    current_node = edge.converge_to
+                    if current_node == "__END__":
+                        break
+                    if current_node in self._nodes:
+                        node = self._nodes[current_node]
+                        yield StreamEvent(
+                            event_type="node_start",
+                            node_name=current_node,
+                            state=state_manager.state
+                        )
+                        if exec_config.save_checkpoints:
+                            state_manager.save_snapshot(node_name=current_node)
+                        node_result = await node.execute(state_manager.state)
+                        yield StreamEvent(
+                            event_type="node_end",
+                            node_name=current_node,
+                            state=state_manager.state,
+                            result=node_result
+                        )
+                        if node_result.success:
+                            state_manager.update(node_result.state_updates)
+                            yield StreamEvent(
+                                event_type="state_update",
+                                node_name=current_node,
+                                state=state_manager.state
+                            )
+                        else:
+                            yield StreamEvent(
+                                event_type="error",
+                                node_name=current_node,
+                                state=state_manager.state,
+                                result=node_result
+                            )
+                            return
+                    continue
+                else:
+                    break
 
             if target == "__END__":
                 break

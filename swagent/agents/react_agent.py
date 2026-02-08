@@ -3,6 +3,8 @@ ReAct Agent
 基于ReAct（Reasoning and Acting）模式的Agent
 专门用于判断多Agent辩论何时应该终结
 """
+import json
+import re
 from typing import Optional, List, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
@@ -86,27 +88,18 @@ class ReActAgent(BaseAgent):
     @property
     def system_prompt(self) -> str:
         """ReAct Agent的系统提示"""
-        return """你是一个专业的辩论仲裁者Agent，使用ReAct（推理-行动）模式进行判断。
+        return """你是一个专业的辩论仲裁者Agent。
 
-你的职责：
-1. 观察多Agent辩论的进展
-2. 分析讨论的质量、深度和共识程度
-3. 判断何时应该终止讨论
-4. 提供清晰的决策理由
+你的职责：分析多Agent辩论的进展，判断何时应该终止讨论。
 
-判断标准：
-- **达成共识(CONSENSUS)**: 各方观点趋于一致，没有重大分歧
-- **信息充分(SUFFICIENT)**: 关键信息已充分讨论，继续讨论收益递减
-- **分歧过大(DIVERGENCE)**: 观点差异太大，需要外部介入或重新框架
-- **继续讨论(CONTINUE)**: 还有价值的讨论空间，应继续
-- **超时(TIMEOUT)**: 讨论轮次过多，应强制终止
+状态定义：
+- CONTINUE: 还有价值的讨论空间，应继续
+- CONSENSUS: 各方观点趋于一致，没有重大分歧
+- SUFFICIENT: 关键信息已充分讨论，继续讨论收益递减
+- DIVERGENCE: 观点差异太大，需要外部介入
+- TIMEOUT: 讨论轮次过多，应强制终止
 
-你的思考过程：
-1. **Thought（思考）**: 分析当前讨论状态
-2. **Observation（观察）**: 总结关键信息和模式
-3. **Action（行动）**: 做出决策并给出理由
-
-请以结构化、客观的方式进行判断。"""
+你必须严格以JSON格式输出判断结果，不要输出任何其他内容。"""
 
     async def process(self, message: Message) -> Message:
         """
@@ -170,31 +163,23 @@ class ReActAgent(BaseAgent):
         debate_text = self._format_debate_history(debate_history)
 
         # 构建判断提示
-        prompt = f"""请使用ReAct模式分析以下辩论，并判断是否应该终止讨论。
+        prompt = f"""分析以下辩论，判断是否应该终止讨论。
 
-当前状态:
-- 当前轮次: {current_round}/{max_rounds}
-- 参与者数量: {len(set(msg['agent'] for msg in debate_history))}
-- 总发言次数: {len(debate_history)}
+当前轮次: {current_round}/{max_rounds}
+参与者数量: {len(set(msg['agent'] for msg in debate_history))}
+总发言次数: {len(debate_history)}
 
 辩论历史:
 {debate_text}
 
-请按以下格式输出:
-
-**Thought（思考）**:
-[分析当前讨论的状态，包括：观点是否趋同、信息是否充分、是否有新观点等]
-
-**Observation（观察）**:
-[总结关键观察：各方观点、共识点、分歧点、讨论深度等]
-
-**Action（决策）**:
-状态: [CONTINUE/CONSENSUS/SUFFICIENT/DIVERGENCE/TIMEOUT中选一个]
-置信度: [0.0-1.0之间的数字]
-理由: [详细说明做出此决策的理由]
-建议: [对后续行动的建议，用|分隔多个建议]
-
-请严格按照以上格式输出。"""
+请严格输出以下JSON格式（不要输出其他任何内容）:
+```json
+{{
+  "status": "CONTINUE或CONSENSUS或SUFFICIENT或DIVERGENCE或TIMEOUT",
+  "confidence": 0.0到1.0之间的数字,
+  "reason": "做出此决策的理由"
+}}
+```"""
 
         # 调用LLM进行判断
         response = await self.chat(prompt, use_history=False)
@@ -226,7 +211,7 @@ class ReActAgent(BaseAgent):
 
     def _parse_judgment_response(self, response: str) -> ThoughtResult:
         """
-        解析LLM的判断响应
+        解析LLM的JSON判断响应
 
         Args:
             response: LLM响应文本
@@ -234,94 +219,67 @@ class ReActAgent(BaseAgent):
         Returns:
             ThoughtResult对象
         """
-        # 提取各个部分
-        reasoning = self._extract_section(response, "Thought", "Observation")
-        observation = self._extract_section(response, "Observation", "Action")
-        action_text = self._extract_section(response, "Action", None)
+        # 尝试从响应中提取JSON
+        data = None
 
-        # 解析Action部分
-        decision = DebateStatus.CONTINUE
-        confidence = 0.5
-        reason = ""
-        suggestions = []
+        # 方式1: 提取```json ... ```代码块
+        json_match = re.search(r'```json\s*(\{.*?\})\s*```', response, re.DOTALL)
+        if json_match:
+            try:
+                data = json.loads(json_match.group(1))
+            except json.JSONDecodeError:
+                pass
 
-        if action_text:
-            # 提取状态
-            if "CONSENSUS" in action_text.upper():
-                decision = DebateStatus.CONSENSUS
-            elif "SUFFICIENT" in action_text.upper():
-                decision = DebateStatus.SUFFICIENT
-            elif "DIVERGENCE" in action_text.upper():
-                decision = DebateStatus.DIVERGENCE
-            elif "TIMEOUT" in action_text.upper():
-                decision = DebateStatus.TIMEOUT
-            else:
-                decision = DebateStatus.CONTINUE
-
-            # 提取置信度
-            import re
-            confidence_match = re.search(r'置信度[:：]\s*(0?\.\d+|1\.0|[01])', action_text)
-            if confidence_match:
+        # 方式2: 直接尝试解析整个响应中的JSON对象
+        if data is None:
+            json_match = re.search(r'\{[^{}]*"status"[^{}]*\}', response, re.DOTALL)
+            if json_match:
                 try:
-                    confidence = float(confidence_match.group(1))
-                except ValueError:
-                    confidence = 0.5
+                    data = json.loads(json_match.group(0))
+                except json.JSONDecodeError:
+                    pass
 
-            # 提取理由
-            reason_match = re.search(r'理由[:：]\s*(.+?)(?=\n建议[:：]|$)', action_text, re.DOTALL)
-            if reason_match:
-                reason = reason_match.group(1).strip()
+        # 解析结果
+        if data and isinstance(data, dict):
+            # 解析status
+            status_str = str(data.get("status", "CONTINUE")).upper()
+            status_map = {
+                "CONSENSUS": DebateStatus.CONSENSUS,
+                "SUFFICIENT": DebateStatus.SUFFICIENT,
+                "DIVERGENCE": DebateStatus.DIVERGENCE,
+                "TIMEOUT": DebateStatus.TIMEOUT,
+                "CONTINUE": DebateStatus.CONTINUE,
+            }
+            decision = status_map.get(status_str, DebateStatus.CONTINUE)
 
-            # 提取建议
-            suggestions_match = re.search(r'建议[:：]\s*(.+)', action_text, re.DOTALL)
-            if suggestions_match:
-                suggestions_text = suggestions_match.group(1).strip()
-                suggestions = [s.strip() for s in suggestions_text.split('|') if s.strip()]
+            # 解析confidence
+            try:
+                confidence = float(data.get("confidence", 0.5))
+                confidence = max(0.0, min(1.0, confidence))
+            except (ValueError, TypeError):
+                confidence = 0.5
 
+            reason = str(data.get("reason", ""))
+
+            return ThoughtResult(
+                reasoning="",
+                observation="",
+                decision=decision,
+                confidence=confidence,
+                reason=reason,
+                suggestions=[],
+            )
+
+        # JSON解析失败，回退默认值
+        logger.warning(f"无法解析判断JSON，回退为CONTINUE: {response[:200]}")
         return ThoughtResult(
-            reasoning=reasoning.strip(),
-            observation=observation.strip(),
-            decision=decision,
-            confidence=confidence,
-            reason=reason,
-            suggestions=suggestions
+            reasoning="",
+            observation="",
+            decision=DebateStatus.CONTINUE,
+            confidence=0.5,
+            reason="JSON解析失败，默认继续讨论",
+            suggestions=[],
         )
-
-    def _extract_section(self, text: str, start_marker: str, end_marker: Optional[str]) -> str:
-        """
-        提取文本中的某个section
-
-        Args:
-            text: 原始文本
-            start_marker: 起始标记
-            end_marker: 结束标记，None表示到文本末尾
-
-        Returns:
-            提取的文本
-        """
-        import re
-
-        # 查找起始位置
-        start_pattern = rf'\*\*{start_marker}[^*]*\*\*'
-        start_match = re.search(start_pattern, text, re.IGNORECASE)
-
-        if not start_match:
-            return ""
-
-        start_pos = start_match.end()
-
-        # 查找结束位置
-        if end_marker:
-            end_pattern = rf'\*\*{end_marker}[^*]*\*\*'
-            end_match = re.search(end_pattern, text[start_pos:], re.IGNORECASE)
-            if end_match:
-                end_pos = start_pos + end_match.start()
-            else:
-                end_pos = len(text)
-        else:
-            end_pos = len(text)
-
-        return text[start_pos:end_pos].strip()
 
     async def should_terminate_debate(
         self,

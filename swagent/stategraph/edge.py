@@ -42,6 +42,7 @@ class Edge:
         condition: Condition function for conditional edges
         target_map: Mapping of condition results to targets
         default_target: Default target for conditional edges
+        converge_to: Convergence node after parallel execution
         metadata: Additional edge metadata
     """
     source: str
@@ -50,6 +51,7 @@ class Edge:
     condition: Optional[ConditionFunc] = None
     target_map: Optional[Dict[str, str]] = None
     default_target: Optional[str] = None
+    converge_to: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
@@ -71,14 +73,19 @@ class Edge:
     @property
     def targets(self) -> List[str]:
         """Get all possible targets as a list."""
+        result = []
         if isinstance(self.target, list):
-            return self.target
+            result = list(self.target)
         elif self.target_map:
-            targets = list(self.target_map.values())
-            if self.default_target and self.default_target not in targets:
-                targets.append(self.default_target)
-            return targets
-        return [self.target]
+            result = list(self.target_map.values())
+            if self.default_target and self.default_target not in result:
+                result.append(self.default_target)
+        else:
+            result = [self.target]
+        # Include converge_to for parallel edges
+        if self.converge_to and self.converge_to not in result:
+            result.append(self.converge_to)
+        return result
 
     async def resolve_target(self, state: StateDict) -> Union[str, List[str]]:
         """
@@ -202,6 +209,7 @@ def conditional_edge(
 def parallel_edge(
     source: Union[str, Node, _SpecialNode],
     targets: List[Union[str, Node, _SpecialNode]],
+    converge_to: Optional[Union[str, Node, _SpecialNode]] = None,
     **metadata
 ) -> Edge:
     """
@@ -210,6 +218,7 @@ def parallel_edge(
     Args:
         source: Source node
         targets: List of target nodes (min 2)
+        converge_to: Node to converge to after all parallel nodes complete
         **metadata: Additional metadata
 
     Returns:
@@ -218,13 +227,15 @@ def parallel_edge(
     Example:
         parallel_edge(
             "split_node",
-            ["processor_a", "processor_b", "processor_c"]
+            ["processor_a", "processor_b", "processor_c"],
+            converge_to="aggregate"
         )
     """
     return Edge(
         source=get_node_name(source),
         target=[get_node_name(t) for t in targets],
         edge_type=EdgeType.PARALLEL,
+        converge_to=get_node_name(converge_to) if converge_to else None,
         metadata=metadata
     )
 
