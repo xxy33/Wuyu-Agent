@@ -211,17 +211,64 @@ class MultiDomainReportGenerator:
 | 目标总数 | {stats.get('target_count', 0)} |
 
 """
-        # 如果有样例，展示前3个
-        if samples:
-            section += "### 检测样例\n\n"
-            for i, sample in enumerate(samples[:3], 1):
-                result = sample.get("detection_results", {}).get(task_name, {})
-                section += f"""
-**样例 {i}**: {sample.get('image_name', '未知')}
+        # 筛选出该任务检测到目标的样例
+        task_samples = []
+        for sample in samples:
+            result = sample.get("detection_results", {}).get(task_name, {})
+            if result.get("has_target"):
+                task_samples.append(sample)
 
-> {result.get('description', '无描述')}
+        # 如果有样例，展示前3个
+        if task_samples:
+            section += "### 检测样例\n\n"
+            for i, sample in enumerate(task_samples[:3], 1):
+                result = sample.get("detection_results", {}).get(task_name, {})
+                image_path = sample.get("image_path", "")
+                processed_path = sample.get("processed_image_path", "")
+
+                # 转换路径格式
+                if image_path and image_path.startswith('/root/swagent/'):
+                    image_path = '/' + image_path.replace('/root/swagent/', '')
+                elif image_path and not image_path.startswith('/'):
+                    image_path = '/' + image_path
+
+                if processed_path and processed_path.startswith('/root/swagent/'):
+                    processed_path = '/' + processed_path.replace('/root/swagent/', '')
+                elif processed_path and not processed_path.startswith('/'):
+                    processed_path = '/' + processed_path
+
+                section += f"""
+**样例 {i}**:
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+**原始图像**
+
+![原图]({image_path})
+
+</td>
+<td width="50%" align="center">
+
+**标注图像**
 
 """
+                if processed_path:
+                    section += f"![标注]({processed_path})\n"
+                else:
+                    section += "*（未生成标注图像）*\n"
+
+                section += f"""
+</td>
+</tr>
+</table>
+
+**描述**: {result.get('description', '无描述')}
+
+"""
+        else:
+            section += "### 检测样例\n\n*该任务未检测到目标*\n\n"
 
         section += "---\n"
         return section

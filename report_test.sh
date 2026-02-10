@@ -1,0 +1,13 @@
+python -m swagent.multi_domain_detection \
+      --mode prod \
+      --input /root/swagent/output/processed \
+      --city "武安市" \
+      --tasks "all" \
+      --vl-base-url "$OPENAI_BASE_URL" \
+      --vl-api-key "$OPENAI_API_KEY" \
+      --vl-model "gpt-4o-mini" \
+      --llm-base-url "$OPENAI_BASE_URL" \
+      --llm-api-key "$OPENAI_API_KEY" \
+      --llm-model "gpt-4o-mini" \
+      --small-model-url "https://unplenished-juratory-glynis.ngrok-free.dev" \
+      --small-model-name "sam2_large"
