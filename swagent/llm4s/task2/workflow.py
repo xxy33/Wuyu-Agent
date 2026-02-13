@@ -69,7 +69,7 @@ def build_task2_workflow(
     exec_config = ExecutionConfig(
         max_iterations=20,
         save_checkpoints=True,
-        timeout=600,  # 10分钟超时
+        timeout=1800,  # 30分钟超时（整个流程包含多个LLM调用）
     )
     return graph.compile(exec_config)
 

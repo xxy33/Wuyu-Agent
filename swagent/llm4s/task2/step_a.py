@@ -69,17 +69,23 @@ class StepANodes:
         logger.info(f"[A2] 分析当前研究现状: {topic}")
 
         # KG检索近3年文献
+        logger.info("[A2] 开始 KG 检索近3年文献...")
         kg_result = await self.retriever.search(
             query=topic,
             year_range=(2022, 2025),
             top_k=20,
         )
+        logger.info(f"[A2] KG 检索完成，返回 {len(kg_result.get('kg_results', []))} 条结果")
+        logger.debug(f"[A2] KG context 长度: {len(kg_result['context'])} 字符")
 
         # Tavily搜索最新进展
+        logger.info("[A2] 开始 Tavily 搜索最新进展...")
         tavily_results = self.retriever.tavily.search_latest_research(topic)
         tavily_context = "\n".join(
             f"- {r['title']}: {r['content'][:200]}" for r in tavily_results
         )
+        logger.info(f"[A2] Tavily 搜索完成，返回 {len(tavily_results)} 条结果")
+        logger.debug(f"[A2] Tavily context 长度: {len(tavily_context)} 字符")
 
         messages = [
             {"role": "system", "content": CURRENT_STATUS_SYSTEM},
@@ -89,8 +95,13 @@ class StepANodes:
                 tavily_context=tavily_context,
             )},
         ]
+
+        logger.info(f"[A2] 准备调用 LLM，system prompt 长度: {len(CURRENT_STATUS_SYSTEM)}")
+        logger.info(f"[A2] user prompt 长度: {len(messages[1]['content'])} 字符")
+
         result = await self.llm.chat_json(messages)
 
+        logger.info(f"[A2] LLM 调用成功，返回字段: {list(result.keys())}")
         return {"current_status": result}
 
     async def predict_trends(self, state: Dict[str, Any]) -> Dict[str, Any]:

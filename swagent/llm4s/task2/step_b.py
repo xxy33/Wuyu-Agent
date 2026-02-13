@@ -86,6 +86,12 @@ class StepBNodes:
 
         tasks = [collect_one(r) for r in countries]
         policies_list = await asyncio.gather(*tasks)
+
+        # 添加调试日志
+        logger.debug(f"[B1] policies_list 长度: {len(policies_list)}")
+        for i, p in enumerate(policies_list):
+            logger.debug(f"[B1] policy {i}: role={repr(p.get('role', 'MISSING'))}, keys={list(p.keys())}")
+
         country_policies = {p["role"]: p for p in policies_list}
 
         return {"country_policies": country_policies}
@@ -96,6 +102,7 @@ class StepBNodes:
         policies = state.get("country_policies", {})
         tech_trends = state.get("tech_trends", [])
         logger.info("[B2] 启动Multi-Agent博弈推演...")
+        logger.info(f"[B2] 参与角色: {list(policies.keys())}")
 
         tech_trends_text = json.dumps(tech_trends, ensure_ascii=False, indent=2)[:3000]
 
@@ -110,11 +117,12 @@ class StepBNodes:
         debate_history = []
         roles = list(policies.keys())
 
-        for issue in issues[:self.config.debate_topics_count]:
-            logger.info(f"  议题: {issue}")
+        for issue_idx, issue in enumerate(issues[:self.config.debate_topics_count], 1):
+            logger.info(f"[B2] 议题 {issue_idx}/{self.config.debate_topics_count}: {issue}")
             issue_record = {"issue": issue, "round1": {}, "round2": {}, "observer": {}}
 
             # 第一轮：阐述立场
+            logger.info(f"[B2] 议题 {issue_idx} - 第1轮：阐述立场")
             async def state_position(role: str) -> tuple:
                 profile = json.dumps(policies.get(role, {}), ensure_ascii=False)[:2000]
                 messages = [
@@ -124,15 +132,19 @@ class StepBNodes:
                         tech_trends=tech_trends_text, role=role,
                     )},
                 ]
+                logger.debug(f"[B2] {role} 阐述立场，prompt 长度: {len(messages[1]['content'])}")
                 resp = await self.llm.chat(messages)
+                logger.debug(f"[B2] {role} 立场阐述完成，响应长度: {len(resp)}")
                 return role, resp
 
             r1_tasks = [state_position(r) for r in roles]
             r1_results = await asyncio.gather(*r1_tasks)
             for role, position in r1_results:
                 issue_record["round1"][role] = position
+            logger.info(f"[B2] 议题 {issue_idx} - 第1轮完成，{len(r1_results)} 个角色")
 
             # 第二轮：交叉质疑
+            logger.info(f"[B2] 议题 {issue_idx} - 第2轮：交叉质疑")
             async def cross_challenge(role: str) -> tuple:
                 my_pos = issue_record["round1"].get(role, "")
                 others = "\n\n".join(
@@ -145,15 +157,32 @@ class StepBNodes:
                         other_positions=others, role=role,
                     )},
                 ]
-                resp = await self.llm.chat_json(messages)
-                return role, resp
+                logger.debug(f"[B2] {role} 交叉质疑，prompt 长度: {len(messages[1]['content'])}")
+                try:
+                    resp = await self.llm.chat_json(messages)
+                    logger.debug(f"[B2] {role} 质疑完成，返回字段: {list(resp.keys())}")
+                    return role, resp
+                except Exception as e:
+                    import traceback
+                    logger.error(f"[B2] {role} 交叉质疑失败: {e}")
+                    logger.error(f"[B2] 完整错误堆栈:\n{traceback.format_exc()}")
+                    raise
 
             r2_tasks = [cross_challenge(r) for r in roles]
-            r2_results = await asyncio.gather(*r2_tasks)
-            for role, response in r2_results:
-                issue_record["round2"][role] = response
+            try:
+                r2_results = await asyncio.gather(*r2_tasks)
+                for role, response in r2_results:
+                    issue_record["round2"][role] = response
+                logger.info(f"[B2] 议题 {issue_idx} - 第2轮完成")
+            except Exception as e:
+                import traceback
+                logger.error(f"[B2] 第2轮gather失败: {e}")
+                logger.error(f"[B2] 异常类型: {type(e)}")
+                logger.error(f"[B2] 完整traceback:\n{traceback.format_exc()}")
+                raise
 
             # 观察者总结
+            logger.info(f"[B2] 议题 {issue_idx} - 观察者总结")
             r1_text = "\n\n".join(
                 f"【{r}】: {p}" for r, p in issue_record["round1"].items()
             )
@@ -167,11 +196,14 @@ class StepBNodes:
                     issue=issue, round1_positions=r1_text, round2_responses=r2_text,
                 )},
             ]
+            logger.debug(f"[B2] 观察者总结 prompt 长度: {len(messages[1]['content'])}")
             observer = await self.llm.chat_json(messages)
             issue_record["observer"] = observer
+            logger.info(f"[B2] 议题 {issue_idx} - 观察者总结完成")
 
             debate_history.append(issue_record)
 
+        logger.info(f"[B2] 所有辩论完成，共 {len(debate_history)} 个议题")
         return {"debate_history": debate_history}
 
     async def analyze_conflicts(self, state: Dict[str, Any]) -> Dict[str, Any]:

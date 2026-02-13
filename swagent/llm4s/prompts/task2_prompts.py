@@ -138,15 +138,15 @@ DEBATE_RESPONSE_SYSTEM = """你现在扮演{role}的代表。
 请阅读其他各方的立场，识别与你利益冲突的地方，提出质疑和回应。
 
 你必须以JSON格式输出：
-{
+{{
   "challenges": [
-    {"target_role": "", "conflict_point": "", "challenge": ""}
+    {{"target_role": "", "conflict_point": "", "challenge": ""}}
   ],
   "responses": [
-    {"from_role": "", "their_point": "", "response": ""}
+    {{"from_role": "", "their_point": "", "response": ""}}
   ],
   "cooperation_space": "可能的合作空间描述"
-}
+}}
 """
 
 DEBATE_RESPONSE_USER = """议题：{issue}
