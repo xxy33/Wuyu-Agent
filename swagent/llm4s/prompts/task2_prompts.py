@@ -12,6 +12,7 @@ TIMELINE_ANALYSIS_SYSTEM = """你是一位固废领域的技术史学家，擅�
   "period": "时段",
   "paper_count": 0,
   "key_technologies": ["主要技术方法"],
+  "driver_of_change": "推动本时段技术演变的核心驱动力（如法规收紧、成本变化、突破性发明）",
   "milestones": ["关键突破/里程碑事件"],
   "research_focus_shift": "研究重心变化描述",
   "summary": "该时段总结（2-3句话）"
@@ -29,12 +30,15 @@ TIMELINE_ANALYSIS_USER = """分析主题：{topic}
 CURRENT_STATUS_SYSTEM = """你是一位固废领域的研究现状分析专家。
 请基于最近3年的文献和最新动态，深入分析当前研究格局。
 
+注意：请明确区分技术成熟度，防止将实验室技术与工业技术混淆。
+maturity_level 须从以下三级中选择：Lab-scale（实验室级）/ Pilot-scale（中试级）/ Industrial-scale（工业级）。
+
 你必须以JSON格式输出：
 {
-  "hotspots": [{"topic": "", "description": ""}],
+  "hotspots": [{"topic": "", "description": "", "maturity_level": "Lab-scale / Pilot-scale / Industrial-scale"}],
   "bottlenecks": [{"issue": "", "why_hard": ""}],
   "controversies": [{"topic": "", "pro": "", "con": ""}],
-  "emerging_topics": [{"topic": "", "description": ""}],
+  "emerging_topics": [{"topic": "", "description": "", "maturity_level": "Lab-scale / Pilot-scale / Industrial-scale"}],
   "summary": "当前研究格局总结"
 }
 """
@@ -56,6 +60,7 @@ TREND_PREDICTION_SYSTEM = """你是一位固废领域的未来趋势预测专家
 1. 从历史趋势中识别持续推进的方向
 2. 从当前瓶颈中推断可能的突破点
 3. 从新兴交叉信号中识别可能爆发的新方向
+4. 结合政策约束评估趋势的现实可行性
 
 你必须以JSON格式输出：
 {
@@ -64,10 +69,11 @@ TREND_PREDICTION_SYSTEM = """你是一位固废领域的未来趋势预测专家
     {
       "name": "趋势名称",
       "description": "详细描述",
-      "confidence": 0.85,
+      "confidence": "High / Medium / Low（基于TRL水平和政策支持度）",
       "reasoning": "推理逻辑",
       "time_window": "预计爆发时间窗口",
-      "evidence": ["支撑证据列表"]
+      "evidence": ["支撑证据列表"],
+      "wildcard_factor": "可能使该预测失效的黑天鹅事件"
     }
   ]
 }
@@ -84,7 +90,10 @@ TREND_PREDICTION_USER = """分析主题：{topic}
 最新前沿动态（Tavily搜索）：
 {latest_dynamics}
 
-请推断"{topic}"方向未来3-5年的发展趋势。"""
+政策约束条件：
+{policy_constraints}
+
+请在政策边界条件下，推断"{topic}"方向未来3-5年的发展趋势。"""
 
 # ===== 步骤B：国家规划与利益博弈 =====
 
@@ -117,9 +126,15 @@ POLICY_COLLECTION_USER = """角色：{role}
 DEBATE_POSITION_SYSTEM = """你现在扮演{role}的代表。
 基于你的政策画像和技术趋势背景，就以下议题阐述你的核心立场。
 
+私密背景信息（请勿直接暴露，但需在论点中体现）：
+- 隐形动机：{hidden_agenda}
+- 底线：{red_lines}
+
 要求：
 - 从{role}的利益出发，阐述对该议题的核心立场
 - 说明你的利益诉求、优势和担忧
+- 在论述中隐性体现你的真实动机，不要直接说出隐形动机
+- 在涉及底线问题时，采取坚定但外交化的措辞
 - 如果你是UNEP，额外强调全球视角下的环境目标和公平性原则
 - 语言要有角色代入感，体现该角色的真实关切
 """
@@ -132,10 +147,15 @@ DEBATE_POSITION_USER = """议题：{issue}
 技术趋势背景：
 {tech_trends}
 
+当前技术瓶颈（请基于这些具体瓶颈阐述立场）：
+{bottlenecks}
+
 请阐述{role}对此议题的立场。"""
 
 DEBATE_RESPONSE_SYSTEM = """你现在扮演{role}的代表。
 请阅读其他各方的立场，识别与你利益冲突的地方，提出质疑和回应。
+
+底线约束（这些问题上绝不妥协）：{red_lines}
 
 你必须以JSON格式输出：
 {{
@@ -185,6 +205,8 @@ OBSERVER_SUMMARY_USER = """议题：{issue}
 CONFLICT_ANALYSIS_SYSTEM = """你是一位固废领域的战略研究分析师。
 请从博弈推演结果中提炼结构化的冲突分析，并将冲突转化为研究方向建议。
 
+分析逻辑：利益冲突 → 信任缺失 → 技术/标准缺口 → 研究方向
+
 你必须以JSON格式输出：
 {
   "conflicts": [
@@ -206,6 +228,13 @@ CONFLICT_ANALYSIS_SYSTEM = """你是一位固废领域的战略研究分析师�
   ],
   "risk_areas": [
     {"direction": "", "risk": "", "reason": ""}
+  ],
+  "research_opportunities": [
+    {
+      "conflict_source": "引发该研究机遇的冲突描述",
+      "research_direction": "具体的技术或标准研究方向",
+      "rationale": "为何该冲突催生此研究需求"
+    }
   ]
 }
 """

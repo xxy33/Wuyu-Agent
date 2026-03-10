@@ -39,6 +39,22 @@ LOCATION_MAP = {
     "Southeast Asia/Africa": None,
 }
 
+ROLE_HIDDEN_AGENDAS = {
+    "UNEP":   "借环境议程扩大自身在全球固废治理中的主导权",
+    "China":  "通过垃圾发电技术出口，将固废处理变为'一带一路'新增长点",
+    "EU":     "以高环保标准构建'绿色贸易壁垒'，保护本土循环经济产业",
+    "USA":    "优先保护本国垃圾处理企业的市场份额，避免强制性国际标准",
+    "Southeast Asia/Africa": "争取发达国家的技术转让和资金援助，避免承担超过自身能力的减排义务",
+}
+
+ROLE_RED_LINES = {
+    "UNEP":   "不接受任何削弱巴塞尔公约约束力的方案",
+    "China":  "不接受国际机构对中国国内垃圾处理政策的直接干预",
+    "EU":     "不接受低于欧盟标准的技术方案作为'等同替代'",
+    "USA":    "不接受具有法律约束力的强制减量目标",
+    "Southeast Asia/Africa": "不接受在缺乏充足资金和技术支持下承担与发达国家相同的义务",
+}
+
 
 class StepBNodes:
     """步骤B节点集合"""
@@ -106,6 +122,16 @@ class StepBNodes:
 
         tech_trends_text = json.dumps(tech_trends, ensure_ascii=False, indent=2)[:3000]
 
+        # 从A2结果中提取技术瓶颈
+        current_status = state.get("current_status", {})
+        bottlenecks_raw = current_status.get("bottlenecks", [])
+        if bottlenecks_raw:
+            bottlenecks_text = "\n".join(
+                f"- {b.get('issue', '')}: {b.get('why_hard', '')}" for b in bottlenecks_raw
+            )
+        else:
+            bottlenecks_text = "暂无已识别的技术瓶颈"
+
         # 动态生成议题
         issues = [
             f"{topic}的全球发展路径选择",
@@ -125,11 +151,18 @@ class StepBNodes:
             logger.info(f"[B2] 议题 {issue_idx} - 第1轮：阐述立场")
             async def state_position(role: str) -> tuple:
                 profile = json.dumps(policies.get(role, {}), ensure_ascii=False)[:2000]
+                hidden_agenda = ROLE_HIDDEN_AGENDAS.get(role, "无特殊隐形动机")
+                red_lines = ROLE_RED_LINES.get(role, "无明确底线")
                 messages = [
-                    {"role": "system", "content": DEBATE_POSITION_SYSTEM.format(role=role)},
+                    {"role": "system", "content": DEBATE_POSITION_SYSTEM.format(
+                        role=role,
+                        hidden_agenda=hidden_agenda,
+                        red_lines=red_lines,
+                    )},
                     {"role": "user", "content": DEBATE_POSITION_USER.format(
                         issue=issue, policy_profile=profile,
                         tech_trends=tech_trends_text, role=role,
+                        bottlenecks=bottlenecks_text,
                     )},
                 ]
                 logger.debug(f"[B2] {role} 阐述立场，prompt 长度: {len(messages[1]['content'])}")
@@ -150,8 +183,12 @@ class StepBNodes:
                 others = "\n\n".join(
                     f"【{r}】: {p}" for r, p in issue_record["round1"].items() if r != role
                 )
+                red_lines = ROLE_RED_LINES.get(role, "无明确底线")
                 messages = [
-                    {"role": "system", "content": DEBATE_RESPONSE_SYSTEM.format(role=role)},
+                    {"role": "system", "content": DEBATE_RESPONSE_SYSTEM.format(
+                        role=role,
+                        red_lines=red_lines,
+                    )},
                     {"role": "user", "content": DEBATE_RESPONSE_USER.format(
                         issue=issue, my_position=my_pos,
                         other_positions=others, role=role,

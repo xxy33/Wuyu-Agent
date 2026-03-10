@@ -2,10 +2,11 @@
 任务二：研究趋势推演 - StateGraph工作流
 
 执行顺序：
-  并行启动 → A1(时间线) 和 B1(政策)
-  A1完成 → A2(现状) → A3(趋势)
-  B1完成 → 等待A3 → B2(博弈) → B3(冲突)
-  A3和B3都完成 → 整合报告
+  A1(时间线) → B1(政策) → A2(现状) → A3(趋势) → B2(博弈) → B3(冲突) → integrate(整合)
+
+关键依赖：
+  B1提前到A2之前执行，产出政策约束供A3使用
+  A2的瓶颈分析结果供B2辩论使用
 """
 import logging
 from typing import Dict, Any, Optional
@@ -34,8 +35,8 @@ def build_task2_workflow(
     我们采用顺序执行但在节点内部使用asyncio并行的方式。
 
     实际执行流程：
-    A1 → A2 → A3 → B1 → B2 → B3 → integrate
-    其中A1和B1内部各自并行处理多个子任务。
+    A1 → B1 → A2 → A3 → B2 → B3 → integrate
+    B1提前到A2之前，使A3可以读取政策约束；A2在B2之前，使B2可以引用技术瓶颈。
     """
     config = config or LLM4SConfig()
     llm = llm or LLMClient(config)
@@ -56,12 +57,12 @@ def build_task2_workflow(
     graph.add_node("analyze_conflicts", step_b.analyze_conflicts)    # B3
     graph.add_node("integrate", integrator.integrate)                # 整合
 
-    # 定义边 - 顺序执行
+    # 定义边 - 顺序执行：A1 → B1 → A2 → A3 → B2 → B3 → integrate
     graph.add_edge(START, "build_timeline")
-    graph.add_edge("build_timeline", "analyze_current")
+    graph.add_edge("build_timeline", "collect_policies")
+    graph.add_edge("collect_policies", "analyze_current")
     graph.add_edge("analyze_current", "predict_trends")
-    graph.add_edge("predict_trends", "collect_policies")
-    graph.add_edge("collect_policies", "run_debate")
+    graph.add_edge("predict_trends", "run_debate")
     graph.add_edge("run_debate", "analyze_conflicts")
     graph.add_edge("analyze_conflicts", "integrate")
     graph.add_edge("integrate", END)

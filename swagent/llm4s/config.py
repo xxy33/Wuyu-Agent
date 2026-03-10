@@ -10,7 +10,7 @@ class LLM4SConfig:
     """LLM4S系统配置"""
 
     # LLM API配置
-    api_key: str = "sk-xxx"
+    api_key: str = "sk-xx"
     base_url: str = "https://www.dmxapi.cn/v1"
     llm_model: str = "gpt-5.2"
     embedding_model: str = "bge-m3"
@@ -20,15 +20,15 @@ class LLM4SConfig:
     local_embedding_model_path: str = "/root/abstract_agent/embedding/bge-m3"
 
     # Tavily配置
-    tavily_api_key: str = "tvly-dev-xxx"
+    tavily_api_key: str = "tvly-dev-xx"
 
     # 数据路径
-    kg_path: str = "/root/abstract_agent/data/knowledge/New_Output_Remote.jsonl"
-    papers_path: str = "/root/abstract_agent/data/data.jsonl"
+    kg_path: str = r"C:\Users\CHENXY\xwechat_files\wxid_5jqa2znrhivm21_8a25\msg\file\2026-02\New_Output_Remote.jsonl"
+    papers_path: str = r"D:\BaiduNetdiskDownload\data.jsonl"
 
     # 向量索引路径
-    faiss_index_path: str = "/root/Wuyu-Agent-main/swagent/llm4s/data/faiss_index"
-    id_map_path: str = "/root/Wuyu-Agent-main/swagent/llm4s/data/id_map.json"
+    faiss_index_path: str = r"D:\github\Wuyu-Agent\swagent\llm4s\data\faiss_index"
+    id_map_path: str = r"D:\github\Wuyu-Agent\swagent\llm4s\data\id_map.json"
 
     # 检索参数
     kg_top_k: int = 50
