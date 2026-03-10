@@ -119,6 +119,19 @@ class StepANodes:
         current = state.get("current_status", {})
         current_summary = current.get("summary", "")
 
+        # 从B1政策结果中提取政策约束
+        country_policies = state.get("country_policies", {})
+        policy_parts = []
+        for role, policy in country_policies.items():
+            core_interests = policy.get("core_interests", "")
+            priority_directions = policy.get("priority_directions", [])
+            if core_interests or priority_directions:
+                directions_str = "；".join(priority_directions) if priority_directions else "无"
+                policy_parts.append(
+                    f"- {role}：核心利益={core_interests}；优先方向={directions_str}"
+                )
+        policy_constraints = "\n".join(policy_parts) if policy_parts else "暂无政策约束信息"
+
         # Tavily搜索最前沿动态
         tavily_results = self.retriever.tavily.search(
             f"latest breakthrough {topic} solid waste 2024 2025",
@@ -135,6 +148,7 @@ class StepANodes:
                 timeline_summary=timeline_summary,
                 current_status=json.dumps(current, ensure_ascii=False, indent=2)[:3000],
                 latest_dynamics=latest_dynamics,
+                policy_constraints=policy_constraints,
             )},
         ]
         result = await self.llm.chat_json(messages, max_tokens=8192)
