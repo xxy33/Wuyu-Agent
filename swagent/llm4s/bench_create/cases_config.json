@@ -1,0 +1,708 @@
+{
+  "time_windows": {
+    "pre_shift": [2015, 2020],
+    "post_shift": [2021, 2025]
+  },
+  "cases": [
+    {
+      "case_id": "case_01",
+      "domain_name": "动力电池回收",
+      "domain_name_en": "Lithium-ion Battery Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["lithium-ion battery", "spent battery", "battery waste", "EV battery"],
+        "Technology": ["acid leaching", "hydrometallurgy", "pyrometallurgy", "acid dissolution"]
+      },
+      "post_shift": {
+        "Waste_Object": ["lithium-ion battery", "spent battery", "battery waste", "EV battery"],
+        "Technology": ["direct recycling", "cathode regeneration", "organic acid leaching", "cascade utilization", "direct cathode repair"]
+      }
+    },
+    {
+      "case_id": "case_02",
+      "domain_name": "光伏组件处理",
+      "domain_name_en": "Photovoltaic Module Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["solar panel", "photovoltaic module", "PV waste", "solar cell"],
+        "Technology": ["crushing", "landfill", "mechanical recycling"]
+      },
+      "post_shift": {
+        "Waste_Object": ["solar panel", "photovoltaic module", "PV waste", "solar cell"],
+        "Technology": ["silicon recovery", "silver recovery", "high-purity glass recovery", "delamination", "PV recycling"]
+      }
+    },
+    {
+      "case_id": "case_03",
+      "domain_name": "风机叶片",
+      "domain_name_en": "Wind Turbine Blade Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["wind turbine blade", "blade waste", "composite waste", "fiberglass waste"],
+        "Technology": ["mechanical grinding", "cement co-processing", "filler material"]
+      },
+      "post_shift": {
+        "Waste_Object": ["wind turbine blade", "blade waste", "composite waste", "fiberglass waste"],
+        "Technology": ["chemical recycling", "solvolysis", "carbon fiber recovery", "resin degradation", "pyrolysis"]
+      }
+    },
+    {
+      "case_id": "case_04",
+      "domain_name": "线路板（PCB）",
+      "domain_name_en": "Printed Circuit Board Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["PCB", "printed circuit board", "e-waste", "circuit board", "WEEE"],
+        "Technology": ["smelting", "pyrometallurgy", "copper extraction", "fire refining"]
+      },
+      "post_shift": {
+        "Waste_Object": ["PCB", "printed circuit board", "e-waste", "circuit board", "WEEE"],
+        "Technology": ["bioleaching", "supercritical fluid", "mechanochemical", "ionic liquid", "bio-hydrometallurgy"]
+      }
+    },
+    {
+      "case_id": "case_05",
+      "domain_name": "废旧轮胎",
+      "domain_name_en": "Waste Tire Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["waste tire", "scrap tire", "rubber waste", "tire waste"],
+        "Technology": ["reclaimed rubber", "retreading", "crude oil recovery"]
+      },
+      "post_shift": {
+        "Waste_Object": ["waste tire", "scrap tire", "rubber waste", "tire waste"],
+        "Technology": ["continuous pyrolysis", "carbon black", "recovered carbon black", "microwave pyrolysis", "devulcanization"]
+      }
+    },
+    {
+      "case_id": "case_06",
+      "domain_name": "废塑料（PP/PE）",
+      "domain_name_en": "Waste Plastics Chemical Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["waste plastic", "plastic waste", "polyethylene", "polypropylene", "PE", "PP"],
+        "Technology": ["mechanical recycling", "downcycling", "melt processing"]
+      },
+      "post_shift": {
+        "Waste_Object": ["waste plastic", "plastic waste", "polyethylene", "polypropylene", "PE", "PP"],
+        "Technology": ["chemical recycling", "depolymerization", "catalytic pyrolysis", "monomer recovery", "plastic-to-fuel"]
+      }
+    },
+    {
+      "case_id": "case_07",
+      "domain_name": "PET塑料",
+      "domain_name_en": "PET Plastic Enzymatic Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["PET", "polyethylene terephthalate", "PET waste", "PET bottle"],
+        "Technology": ["physical recycling", "flake processing", "melt recycling"]
+      },
+      "post_shift": {
+        "Waste_Object": ["PET", "polyethylene terephthalate", "PET waste", "PET bottle"],
+        "Technology": ["enzymatic degradation", "PETase", "biocatalytic recycling", "enzyme recycling", "biological depolymerization"]
+      }
+    },
+    {
+      "case_id": "case_08",
+      "domain_name": "制冷剂处理",
+      "domain_name_en": "Refrigerant Recovery and Destruction",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["refrigerant", "CFC", "HCFC", "HFC", "F-gas"],
+        "Technology": ["collection", "recovery", "atmospheric release"]
+      },
+      "post_shift": {
+        "Waste_Object": ["refrigerant", "CFC", "HCFC", "HFC", "F-gas"],
+        "Technology": ["fluorine recovery", "catalytic decomposition", "plasma destruction", "resource recovery"]
+      }
+    },
+    {
+      "case_id": "case_09",
+      "domain_name": "稀土永磁回收",
+      "domain_name_en": "Rare Earth Magnet Recycling",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["rare earth", "NdFeB", "permanent magnet", "neodymium magnet"],
+        "Technology": ["steel recycling", "scrap processing", "waste treatment"]
+      },
+      "post_shift": {
+        "Waste_Object": ["rare earth", "NdFeB", "permanent magnet", "neodymium magnet"],
+        "Technology": ["ion exchange", "solvent extraction", "selective leaching", "rare earth recovery", "hydrometallurgical separation"]
+      }
+    },
+    {
+      "case_id": "case_10",
+      "domain_name": "废弃家电",
+      "domain_name_en": "WEEE Automated Disassembly",
+      "category": "城市矿产与电子废弃物",
+      "pre_shift": {
+        "Waste_Object": ["WEEE", "waste appliance", "e-waste", "electronic waste", "household appliance"],
+        "Technology": ["manual disassembly", "hand dismantling", "informal recycling"]
+      },
+      "post_shift": {
+        "Waste_Object": ["WEEE", "waste appliance", "e-waste", "electronic waste", "household appliance"],
+        "Technology": ["robotic disassembly", "automated dismantling", "digital twin", "AI sorting", "flexible disassembly"]
+      }
+    },
+    {
+      "case_id": "case_11",
+      "domain_name": "厨余垃圾",
+      "domain_name_en": "Food Waste Valorization",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["food waste", "kitchen waste", "organic waste"],
+        "Technology": ["anaerobic digestion", "biogas production", "composting", "methane production"]
+      },
+      "post_shift": {
+        "Waste_Object": ["food waste", "kitchen waste", "organic waste"],
+        "Technology": ["volatile fatty acids", "VFA production", "PHA", "polyhydroxyalkanoates", "acidogenic fermentation", "carboxylic acids"]
+      }
+    },
+    {
+      "case_id": "case_12",
+      "domain_name": "厨余资源化",
+      "domain_name_en": "Food Waste Insect Bioconversion",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["food waste", "kitchen waste", "organic waste"],
+        "Technology": ["animal feed", "feed production", "feed processing"]
+      },
+      "post_shift": {
+        "Waste_Object": ["food waste", "kitchen waste", "organic waste"],
+        "Technology": ["black soldier fly", "Hermetia illucens", "insect protein", "BSF", "larvae bioconversion"]
+      }
+    },
+    {
+      "case_id": "case_13",
+      "domain_name": "餐厨油脂",
+      "domain_name_en": "Waste Cooking Oil to SAF",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["waste cooking oil", "waste grease", "used cooking oil", "UCO"],
+        "Technology": ["biodiesel", "FAME", "transesterification"]
+      },
+      "post_shift": {
+        "Waste_Object": ["waste cooking oil", "waste grease", "used cooking oil", "UCO"],
+        "Technology": ["sustainable aviation fuel", "SAF", "hydroprocessed esters", "HEFA", "bio-jet fuel"]
+      }
+    },
+    {
+      "case_id": "case_14",
+      "domain_name": "园林绿化垃圾",
+      "domain_name_en": "Green Waste Biochar",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["green waste", "garden waste", "yard waste", "pruning waste"],
+        "Technology": ["composting", "landfill", "mulching"]
+      },
+      "post_shift": {
+        "Waste_Object": ["green waste", "garden waste", "yard waste", "pruning waste"],
+        "Technology": ["biochar", "pyrolysis", "carbon sequestration", "torrefaction"]
+      }
+    },
+    {
+      "case_id": "case_15",
+      "domain_name": "农业秸秆",
+      "domain_name_en": "Agricultural Straw Valorization",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["straw", "crop residue", "agricultural waste", "rice straw", "corn stover"],
+        "Technology": ["field return", "animal feed", "direct combustion", "straw incorporation"]
+      },
+      "post_shift": {
+        "Waste_Object": ["straw", "crop residue", "agricultural waste", "rice straw", "corn stover"],
+        "Technology": ["cellulosic ethanol", "nanocellulose", "lignocellulosic biorefinery", "biomass pretreatment"]
+      }
+    },
+    {
+      "case_id": "case_16",
+      "domain_name": "畜禽粪污",
+      "domain_name_en": "Livestock Manure Hydrothermal Processing",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["livestock manure", "animal manure", "poultry manure", "swine manure", "cattle manure"],
+        "Technology": ["composting", "land application", "simple treatment"]
+      },
+      "post_shift": {
+        "Waste_Object": ["livestock manure", "animal manure", "poultry manure", "swine manure", "cattle manure"],
+        "Technology": ["hydrothermal liquefaction", "HTL", "hydrothermal carbonization", "HTC", "bio-oil"]
+      }
+    },
+    {
+      "case_id": "case_17",
+      "domain_name": "污泥处理",
+      "domain_name_en": "Sewage Sludge Resource Recovery",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["sewage sludge", "wastewater sludge", "sludge", "biosolids"],
+        "Technology": ["dewatering", "landfill", "sludge disposal"]
+      },
+      "post_shift": {
+        "Waste_Object": ["sewage sludge", "wastewater sludge", "sludge", "biosolids"],
+        "Technology": ["phosphorus recovery", "struvite", "sludge incineration ash", "brick making", "P-recovery"]
+      }
+    },
+    {
+      "case_id": "case_18",
+      "domain_name": "污泥干化",
+      "domain_name_en": "Sludge Drying Innovation",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["sewage sludge", "sludge", "biosolids"],
+        "Technology": ["thermal drying", "fossil fuel drying", "heat drying"]
+      },
+      "post_shift": {
+        "Waste_Object": ["sewage sludge", "sludge", "biosolids"],
+        "Technology": ["solar drying", "waste heat drying", "electro-osmotic dewatering", "deep dewatering"]
+      }
+    },
+    {
+      "case_id": "case_19",
+      "domain_name": "屠宰废物",
+      "domain_name_en": "Slaughterhouse Waste Valorization",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["slaughterhouse waste", "abattoir waste", "meat waste", "animal by-product"],
+        "Technology": ["incineration", "rendering", "disposal"]
+      },
+      "post_shift": {
+        "Waste_Object": ["slaughterhouse waste", "abattoir waste", "meat waste", "animal by-product"],
+        "Technology": ["protein hydrolysis", "collagen extraction", "gelatin production", "keratin recovery"]
+      }
+    },
+    {
+      "case_id": "case_20",
+      "domain_name": "过期药品",
+      "domain_name_en": "Expired Pharmaceutical Waste Treatment",
+      "category": "厨余与有机固废",
+      "pre_shift": {
+        "Waste_Object": ["pharmaceutical waste", "expired medicine", "drug waste", "medication waste"],
+        "Technology": ["incineration", "hazardous waste treatment", "landfill"]
+      },
+      "post_shift": {
+        "Waste_Object": ["pharmaceutical waste", "expired medicine", "drug waste", "medication waste"],
+        "Technology": ["biodegradation", "advanced oxidation", "AOP", "photocatalytic degradation", "specific degrading bacteria"]
+      }
+    },
+    {
+      "case_id": "case_21",
+      "domain_name": "粉煤灰",
+      "domain_name_en": "Fly Ash High-value Utilization",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["fly ash", "coal ash", "coal combustion residue"],
+        "Technology": ["cement additive", "concrete filler", "road base"]
+      },
+      "post_shift": {
+        "Waste_Object": ["fly ash", "coal ash", "coal combustion residue"],
+        "Technology": ["alumina extraction", "zeolite synthesis", "geopolymer", "cenosphere recovery"]
+      }
+    },
+    {
+      "case_id": "case_22",
+      "domain_name": "赤泥",
+      "domain_name_en": "Red Mud Utilization",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["red mud", "bauxite residue", "alumina refinery residue"],
+        "Technology": ["stockpiling", "impoundment", "storage"]
+      },
+      "post_shift": {
+        "Waste_Object": ["red mud", "bauxite residue", "alumina refinery residue"],
+        "Technology": ["road construction", "iron recovery", "soil remediation", "building material", "catalyst support"]
+      }
+    },
+    {
+      "case_id": "case_23",
+      "domain_name": "磷石膏",
+      "domain_name_en": "Phosphogypsum Recycling",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["phosphogypsum", "PG waste", "gypsum waste"],
+        "Technology": ["stockpiling", "storage", "landfill"]
+      },
+      "post_shift": {
+        "Waste_Object": ["phosphogypsum", "PG waste", "gypsum waste"],
+        "Technology": ["sulfuric acid recovery", "rare earth extraction", "gypsum board", "gypsum fiber", "purification"]
+      }
+    },
+    {
+      "case_id": "case_24",
+      "domain_name": "钢渣",
+      "domain_name_en": "Steel Slag CO2 Mineralization",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["steel slag", "BOF slag", "EAF slag", "converter slag"],
+        "Technology": ["road construction", "subbase material", "aggregate"]
+      },
+      "post_shift": {
+        "Waste_Object": ["steel slag", "BOF slag", "EAF slag", "converter slag"],
+        "Technology": ["CO2 mineralization", "carbon capture", "carbonation", "CCUS", "CO2 sequestration"]
+      }
+    },
+    {
+      "case_id": "case_25",
+      "domain_name": "煤矸石",
+      "domain_name_en": "Coal Gangue Utilization",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["coal gangue", "mining waste", "coal waste"],
+        "Technology": ["backfilling", "mine filling", "land reclamation"]
+      },
+      "post_shift": {
+        "Waste_Object": ["coal gangue", "mining waste", "coal waste"],
+        "Technology": ["kaolin extraction", "porous ceramics", "geopolymer", "lightweight aggregate"]
+      }
+    },
+    {
+      "case_id": "case_26",
+      "domain_name": "冶炼渣",
+      "domain_name_en": "Smelting Slag Treatment",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["smelting slag", "metallurgical slag", "copper slag", "nickel slag"],
+        "Technology": ["solidification", "stabilization", "heavy metal immobilization"]
+      },
+      "post_shift": {
+        "Waste_Object": ["smelting slag", "metallurgical slag", "copper slag", "nickel slag"],
+        "Technology": ["plasma melting", "vitrification", "slag valorization", "metal recovery"]
+      }
+    },
+    {
+      "case_id": "case_27",
+      "domain_name": "铝灰",
+      "domain_name_en": "Aluminum Dross Valorization",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["aluminum dross", "aluminium dross", "aluminum waste", "Al dross"],
+        "Technology": ["hazardous waste landfill", "disposal", "storage"]
+      },
+      "post_shift": {
+        "Waste_Object": ["aluminum dross", "aluminium dross", "aluminum waste", "Al dross"],
+        "Technology": ["hydrogen generation", "water purification agent", "alumina recovery", "coagulant production"]
+      }
+    },
+    {
+      "case_id": "case_28",
+      "domain_name": "油泥（油田）",
+      "domain_name_en": "Oily Sludge Treatment",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["oily sludge", "oil sludge", "petroleum sludge", "refinery sludge"],
+        "Technology": ["hot washing", "solvent extraction", "chemical washing"]
+      },
+      "post_shift": {
+        "Waste_Object": ["oily sludge", "oil sludge", "petroleum sludge", "refinery sludge"],
+        "Technology": ["thermal desorption", "biosurfactant", "bioremediation", "pyrolysis", "electrokinetic"]
+      }
+    },
+    {
+      "case_id": "case_29",
+      "domain_name": "电镀污泥",
+      "domain_name_en": "Electroplating Sludge Metal Recovery",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["electroplating sludge", "plating sludge", "metal sludge"],
+        "Technology": ["cement solidification", "stabilization", "landfill"]
+      },
+      "post_shift": {
+        "Waste_Object": ["electroplating sludge", "plating sludge", "metal sludge"],
+        "Technology": ["stepwise extraction", "nickel recovery", "chromium recovery", "copper recovery", "selective leaching"]
+      }
+    },
+    {
+      "case_id": "case_30",
+      "domain_name": "尾矿坝",
+      "domain_name_en": "Tailings Management Innovation",
+      "category": "工业固废与大宗矿渣",
+      "pre_shift": {
+        "Waste_Object": ["tailings", "mine tailings", "tailing waste", "tailing dam"],
+        "Technology": ["wet stacking", "conventional impoundment", "dam storage"]
+      },
+      "post_shift": {
+        "Waste_Object": ["tailings", "mine tailings", "tailing waste", "tailing dam"],
+        "Technology": ["paste backfill", "cemented paste backfill", "dry stacking", "zero-waste mining", "tailings valorization"]
+      }
+    },
+    {
+      "case_id": "case_31",
+      "domain_name": "医疗废物",
+      "domain_name_en": "Medical Waste Alternative Treatment",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["medical waste", "healthcare waste", "clinical waste", "hospital waste"],
+        "Technology": ["incineration", "centralized incineration", "autoclave"]
+      },
+      "post_shift": {
+        "Waste_Object": ["medical waste", "healthcare waste", "clinical waste", "hospital waste"],
+        "Technology": ["microwave disinfection", "plasma gasification", "mobile treatment", "non-incineration"]
+      }
+    },
+    {
+      "case_id": "case_32",
+      "domain_name": "焚烧飞灰",
+      "domain_name_en": "MSWI Fly Ash Treatment",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["fly ash", "MSWI fly ash", "incineration fly ash", "incinerator ash"],
+        "Technology": ["cement kiln co-processing", "cement solidification", "co-processing"]
+      },
+      "post_shift": {
+        "Waste_Object": ["fly ash", "MSWI fly ash", "incineration fly ash", "incinerator ash"],
+        "Technology": ["water washing", "thermal treatment", "mechanochemical stabilization", "low-temperature treatment", "melting"]
+      }
+    },
+    {
+      "case_id": "case_33",
+      "domain_name": "废催化剂",
+      "domain_name_en": "Spent Catalyst Regeneration",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["spent catalyst", "waste catalyst", "deactivated catalyst"],
+        "Technology": ["metal extraction", "hydrometallurgy", "pyrometallurgy"]
+      },
+      "post_shift": {
+        "Waste_Object": ["spent catalyst", "waste catalyst", "deactivated catalyst"],
+        "Technology": ["in-situ regeneration", "structural reconstruction", "catalyst rejuvenation", "reactivation"]
+      }
+    },
+    {
+      "case_id": "case_34",
+      "domain_name": "微塑料",
+      "domain_name_en": "Microplastics Remediation",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["microplastic", "micro-plastic", "plastic particle", "MP pollution"],
+        "Technology": ["monitoring", "environmental survey", "occurrence study", "distribution study"]
+      },
+      "post_shift": {
+        "Waste_Object": ["microplastic", "micro-plastic", "plastic particle", "MP pollution"],
+        "Technology": ["degradation enzyme", "plastic degrading enzyme", "capture technology", "health toxicology", "nanoplastic", "removal technology"]
+      }
+    },
+    {
+      "case_id": "case_35",
+      "domain_name": "PFAS（全氟物质）",
+      "domain_name_en": "PFAS Destruction Technology",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["PFAS", "PFOA", "PFOS", "perfluorinated", "per- and polyfluoroalkyl"],
+        "Technology": ["activated carbon adsorption", "GAC", "ion exchange resin", "adsorption"]
+      },
+      "post_shift": {
+        "Waste_Object": ["PFAS", "PFOA", "PFOS", "perfluorinated", "per- and polyfluoroalkyl"],
+        "Technology": ["supercritical water oxidation", "electrochemical oxidation", "sonochemical degradation", "complete defluorination", "PFAS destruction"]
+      }
+    },
+    {
+      "case_id": "case_36",
+      "domain_name": "抗生素抗性基因",
+      "domain_name_en": "Antibiotic Resistance Genes Control",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["antibiotic resistance", "ARG", "antibiotic resistant bacteria", "ARB"],
+        "Technology": ["monitoring", "distribution study", "occurrence", "environmental surveillance"]
+      },
+      "post_shift": {
+        "Waste_Object": ["antibiotic resistance", "ARG", "antibiotic resistant bacteria", "ARB"],
+        "Technology": ["horizontal gene transfer", "HGT inhibition", "nanomaterial inactivation", "ARG removal", "disinfection"]
+      }
+    },
+    {
+      "case_id": "case_37",
+      "domain_name": "废显影液/药剂",
+      "domain_name_en": "Waste Chemical Solvent Recovery",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["waste solvent", "spent solvent", "developing solution", "waste chemical"],
+        "Technology": ["physical treatment", "chemical treatment", "neutralization"]
+      },
+      "post_shift": {
+        "Waste_Object": ["waste solvent", "spent solvent", "developing solution", "waste chemical"],
+        "Technology": ["solvent recovery", "distillation", "high-purity recovery", "electronic grade recovery"]
+      }
+    },
+    {
+      "case_id": "case_38",
+      "domain_name": "废铅蓄电池",
+      "domain_name_en": "Lead-acid Battery Wet Process",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["lead-acid battery", "lead battery", "spent lead battery", "SLA battery"],
+        "Technology": ["pyrometallurgy", "smelting", "fire refining"]
+      },
+      "post_shift": {
+        "Waste_Object": ["lead-acid battery", "lead battery", "spent lead battery", "SLA battery"],
+        "Technology": ["hydrometallurgy", "low-temperature process", "lead paste conversion", "electrowinning", "citric acid leaching"]
+      }
+    },
+    {
+      "case_id": "case_39",
+      "domain_name": "实验室废液",
+      "domain_name_en": "Laboratory Waste Liquid Treatment",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["laboratory waste", "lab waste", "chemical waste liquid"],
+        "Technology": ["classified storage", "centralized collection", "storage"]
+      },
+      "post_shift": {
+        "Waste_Object": ["laboratory waste", "lab waste", "chemical waste liquid"],
+        "Technology": ["distributed treatment", "on-site treatment", "smart treatment system", "automated treatment"]
+      }
+    },
+    {
+      "case_id": "case_40",
+      "domain_name": "垃圾渗滤液",
+      "domain_name_en": "Landfill Leachate Advanced Treatment",
+      "category": "危险废物与新兴污染物",
+      "pre_shift": {
+        "Waste_Object": ["leachate", "landfill leachate", "MSW leachate"],
+        "Technology": ["DTRO", "reverse osmosis", "membrane treatment", "membrane concentrate"]
+      },
+      "post_shift": {
+        "Waste_Object": ["leachate", "landfill leachate", "MSW leachate"],
+        "Technology": ["non-membrane treatment", "evaporation crystallization", "advanced oxidation", "salt recovery", "concentrate treatment"]
+      }
+    },
+    {
+      "case_id": "case_41",
+      "domain_name": "垃圾分类",
+      "domain_name_en": "AI-powered Waste Sorting",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["municipal solid waste", "MSW", "household waste", "waste sorting"],
+        "Technology": ["manual sorting", "supervision", "education campaign"]
+      },
+      "post_shift": {
+        "Waste_Object": ["municipal solid waste", "MSW", "household waste", "waste sorting"],
+        "Technology": ["AI recognition", "computer vision", "deep learning", "smart sorting", "waste classification AI"]
+      }
+    },
+    {
+      "case_id": "case_42",
+      "domain_name": "碳足迹",
+      "domain_name_en": "Waste Carbon Footprint Assessment",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["solid waste", "municipal waste", "waste management"],
+        "Technology": ["pollution assessment", "environmental impact", "emission monitoring"]
+      },
+      "post_shift": {
+        "Waste_Object": ["solid waste", "municipal waste", "waste management"],
+        "Technology": ["life cycle assessment", "LCA", "carbon footprint", "GHG reduction", "carbon accounting"]
+      }
+    },
+    {
+      "case_id": "case_43",
+      "domain_name": "循环经济",
+      "domain_name_en": "Digital Circular Economy",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["circular economy", "waste resource", "material flow"],
+        "Technology": ["qualitative analysis", "descriptive study", "case study"]
+      },
+      "post_shift": {
+        "Waste_Object": ["circular economy", "waste resource", "material flow"],
+        "Technology": ["material flow analysis", "MFA", "digital twin", "industrial ecology", "system dynamics"]
+      }
+    },
+    {
+      "case_id": "case_44",
+      "domain_name": "海洋垃圾",
+      "domain_name_en": "Marine Debris Monitoring and Cleanup",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["marine debris", "ocean waste", "marine litter", "sea garbage"],
+        "Technology": ["passive cleanup", "beach cleanup", "manual collection"]
+      },
+      "post_shift": {
+        "Waste_Object": ["marine debris", "ocean waste", "marine litter", "sea garbage"],
+        "Technology": ["satellite monitoring", "remote sensing", "autonomous robot", "automated interception", "UAV"]
+      }
+    },
+    {
+      "case_id": "case_45",
+      "domain_name": "建筑垃圾",
+      "domain_name_en": "Construction Waste High-value Recycling",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["construction waste", "demolition waste", "C&D waste", "building waste"],
+        "Technology": ["road subbase", "backfilling", "low-grade aggregate"]
+      },
+      "post_shift": {
+        "Waste_Object": ["construction waste", "demolition waste", "C&D waste", "building waste"],
+        "Technology": ["3D printing", "recycled aggregate concrete", "high-grade recycled concrete", "recycled building material"]
+      }
+    },
+    {
+      "case_id": "case_46",
+      "domain_name": "农村固废",
+      "domain_name_en": "Rural Waste Decentralized Treatment",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["rural waste", "village waste", "rural solid waste"],
+        "Technology": ["open burning", "scattered incineration", "simple landfill"]
+      },
+      "post_shift": {
+        "Waste_Object": ["rural waste", "village waste", "rural solid waste"],
+        "Technology": ["small-scale pyrolysis", "decentralized treatment", "waste-to-energy", "modular treatment"]
+      }
+    },
+    {
+      "case_id": "case_47",
+      "domain_name": "固废园区",
+      "domain_name_en": "Industrial Symbiosis in Waste Parks",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["industrial waste", "waste park", "industrial park"],
+        "Technology": ["simple aggregation", "centralized disposal"]
+      },
+      "post_shift": {
+        "Waste_Object": ["industrial waste", "waste park", "industrial park"],
+        "Technology": ["industrial symbiosis", "energy cascade", "eco-industrial park", "waste exchange"]
+      }
+    },
+    {
+      "case_id": "case_48",
+      "domain_name": "二手平台",
+      "domain_name_en": "Second-hand Platform Optimization",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["second-hand", "used goods", "reuse", "waste exchange"],
+        "Technology": ["offline collection", "manual trading", "flea market"]
+      },
+      "post_shift": {
+        "Waste_Object": ["second-hand", "used goods", "reuse", "waste exchange"],
+        "Technology": ["recommendation algorithm", "blockchain", "traceability", "online platform", "digital marketplace"]
+      }
+    },
+    {
+      "case_id": "case_49",
+      "domain_name": "外卖包装",
+      "domain_name_en": "Takeaway Packaging Circular System",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["food packaging", "takeaway packaging", "disposable packaging", "plastic container"],
+        "Technology": ["biodegradable plastic", "PLA", "degradable material"]
+      },
+      "post_shift": {
+        "Waste_Object": ["food packaging", "takeaway packaging", "disposable packaging", "plastic container"],
+        "Technology": ["reusable container", "circular packaging", "standardized collection", "deposit return"]
+      }
+    },
+    {
+      "case_id": "case_50",
+      "domain_name": "填埋场",
+      "domain_name_en": "Landfill Mining and Remediation",
+      "category": "管理体系与前瞻交叉",
+      "pre_shift": {
+        "Waste_Object": ["landfill", "dumpsite", "landfill site", "closed landfill"],
+        "Technology": ["closure", "capping", "post-closure care", "remediation"]
+      },
+      "post_shift": {
+        "Waste_Object": ["landfill", "dumpsite", "landfill site", "closed landfill"],
+        "Technology": ["landfill mining", "landfill gas", "enhanced landfill mining", "ELFM", "resource recovery"]
+      }
+    }
+  ]
+}
