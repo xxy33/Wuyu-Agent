@@ -37,37 +37,55 @@ from swagent.core.orchestrator import (
     TaskResult,
     OrchestrationMode
 )
+from swagent.core.hooks import (
+    HookEvent,
+    HookAction,
+    HookDecision,
+    HookContext,
+    HookDefinition,
+    HookRegistry,
+)
+from swagent.core.error_handler import (
+    ToolExecutionError,
+    FallbackModelError,
+    ContextOverflowError,
+    RecoveryStrategy,
+    classify_error,
+    format_error_for_llm,
+)
+from swagent.core.denial_tracking import DenialTracker
+from swagent.core.progress import ProgressEvent, ProgressEventType, ProgressReporter
+from swagent.core.session_storage import SessionStorage
+from swagent.core.layered_settings import LayeredSettings, SettingSource
+from swagent.core.subagent import SubagentContext, create_subagent_context
 
 __all__ = [
     # 消息系统
-    "Message",
-    "MessageType",
-    "MessageContent",
-    "ContentType",
-    "ThinkResult",
-    "ActionResult",
-
+    "Message", "MessageType", "MessageContent", "ContentType",
+    "ThinkResult", "ActionResult",
     # 上下文管理
-    "ContextManager",
-    "ContextScope",
-    "ExecutionContext",
-
-    # Agent基类
-    "BaseAgent",
-    "AgentConfig",
-    "AgentState",
-
+    "ContextManager", "ContextScope", "ExecutionContext",
+    # Agent 基类
+    "BaseAgent", "AgentConfig", "AgentState",
     # 通信系统
-    "MessageBus",
-    "AgentCommunicator",
-    "CommunicationPattern",
-    "RateLimitConfig",
-    "RateLimiter",
-    "TurnManager",
-
+    "MessageBus", "AgentCommunicator", "CommunicationPattern",
+    "RateLimitConfig", "RateLimiter", "TurnManager",
     # 编排系统
-    "Orchestrator",
-    "TaskDefinition",
-    "TaskResult",
-    "OrchestrationMode",
+    "Orchestrator", "TaskDefinition", "TaskResult", "OrchestrationMode",
+    # Hook 系统
+    "HookEvent", "HookAction", "HookDecision",
+    "HookContext", "HookDefinition", "HookRegistry",
+    # 错误处理
+    "ToolExecutionError", "FallbackModelError", "ContextOverflowError",
+    "RecoveryStrategy", "classify_error", "format_error_for_llm",
+    # 拒绝追踪
+    "DenialTracker",
+    # 进度报告
+    "ProgressEvent", "ProgressEventType", "ProgressReporter",
+    # 会话持久化
+    "SessionStorage",
+    # 分层配置
+    "LayeredSettings", "SettingSource",
+    # 子 Agent
+    "SubagentContext", "create_subagent_context",
 ]

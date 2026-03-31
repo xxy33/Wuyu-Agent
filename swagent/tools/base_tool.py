@@ -3,7 +3,7 @@
 定义所有工具的通用接口和规范
 """
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, List
+from typing import Callable, Dict, Any, Optional, List
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -38,6 +38,8 @@ class ToolResult:
     data: Any
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    duration_ms: float = 0.0
+    truncated: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
@@ -45,7 +47,9 @@ class ToolResult:
             "success": self.success,
             "data": self.data,
             "error": self.error,
-            "metadata": self.metadata
+            "metadata": self.metadata,
+            "duration_ms": self.duration_ms,
+            "truncated": self.truncated,
         }
 
 
@@ -161,6 +165,26 @@ class BaseTool(ABC):
         pass
 
     @property
+    def is_read_only(self) -> bool:
+        """是否为只读工具（用于并发控制，只读工具可并发执行）"""
+        return False
+
+    @property
+    def is_destructive(self) -> bool:
+        """是否为破坏性工具（如删除文件、写入数据库等）"""
+        return False
+
+    @property
+    def timeout(self) -> float:
+        """工具执行超时秒数"""
+        return 60.0
+
+    @property
+    def max_result_size(self) -> int:
+        """结果最大字符数（超过时截断），用于 result budget 控制"""
+        return 50000
+
+    @property
     def schema(self) -> ToolSchema:
         """获取工具模式"""
         if self._schema is None:
@@ -189,11 +213,16 @@ class BaseTool(ABC):
         return []
 
     @abstractmethod
-    async def execute(self, **kwargs) -> ToolResult:
+    async def execute(
+        self,
+        on_progress: Optional[Callable[[str], None]] = None,
+        **kwargs,
+    ) -> ToolResult:
         """
         执行工具
 
         Args:
+            on_progress: 可选的进度回调函数，接收进度描述字符串
             **kwargs: 工具参数
 
         Returns:

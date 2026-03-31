@@ -17,6 +17,12 @@ from swagent.tools.tool_registry import (
     register_tool,
     register_tool_class
 )
+from swagent.tools.tool_executor import (
+    ToolExecutor,
+    ToolExecutionContext,
+    AuditEntry,
+    AuditLog,
+)
 
 __all__ = [
     # 基础类
@@ -31,4 +37,10 @@ __all__ = [
     "get_global_registry",
     "register_tool",
     "register_tool_class",
+
+    # 执行器
+    "ToolExecutor",
+    "ToolExecutionContext",
+    "AuditEntry",
+    "AuditLog",
 ]

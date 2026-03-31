@@ -112,6 +112,11 @@ setup(
             'python-dotenv>=1.0.0',
         ],
     },
+    entry_points={
+        'console_scripts': [
+            'swagent=swagent.cli:main',
+        ],
+    },
     include_package_data=True,
     package_data={
         'swagent': [
